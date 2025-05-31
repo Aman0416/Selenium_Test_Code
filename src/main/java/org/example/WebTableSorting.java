@@ -17,7 +17,7 @@ public class WebTableSorting {
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
  
-        driver.get("https://rahulshettyacademy.com/seleniumPractise/#/offersx");
+        driver.get("https://rahulshettyacademy.com/seleniumPractise/#/offers");
 
         //Click to sort the Data
         driver.findElement(By.xpath("//tr/th[1]")).click();
@@ -33,13 +33,23 @@ public class WebTableSorting {
 
         Assert.assertEquals(sortedList, orginalList);
 
-        //Ques 2 - Scan the name coloumn with gettext -> When Rice Found -> Print the price of Rice
-        List<String> price = elements.stream().filter(s -> s.getText().contains("Rice"))
-                .map(s -> getPriceVeggie(s)).collect(Collectors.toList());
+        //Ques 2 - Scan the name coloumn with gettext -> When Beans Found -> Print the price of Beans with pagination
+        List<String> price;
+
+        do{
+            List<WebElement> rows = driver.findElements(By.xpath("//tr/td[1]"));
+            price = rows.stream().filter(s -> s.getText().contains("Tomato"))
+                    .map(s -> getPriceVeggie(s)).collect(Collectors.toList());
+            price.forEach(System.out::println);
+
+            if(price.isEmpty()){
+                driver.findElement(By.cssSelector("[aria-label = 'Next']")).click();
+            }
+        }while(price.isEmpty());
     }
 
     private static String getPriceVeggie(WebElement s){
-        return null;
+        return s.findElement(By.xpath("following-sibling::td[1]")).getText();
     }
 }
 
